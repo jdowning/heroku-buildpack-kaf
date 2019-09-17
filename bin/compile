@@ -9,7 +9,7 @@ ENV_DIR=$3
 
 KAF_VERSION="0.1.22"
 VENDORED_KAF="vendor/kaf"
-PATH="$BUILD_DIR/$VENDORED_KAF/bin:$PATH"
+PATH="$BUILD_DIR/$VENDORED_KAF:$PATH"
 
 indent() {
   c='s/^/       /'
@@ -29,26 +29,11 @@ wget -q https://github.com/birdayz/kaf/releases/download/v${KAF_VERSION}/kaf_${K
 
 echo "-----> Creating kaf config"
 if [[ -z $KAFKA_URL ]]; then
-  BROKERS=`echo $KAFKA_URL | sed 's|kafka+ssl://||g' | tr ',' '\n' | sed 's|^|- |'`
-  mkdir -p $BUILD_DIR/.kaf
-  cat <<EOF > $BUILD_DIR/.kaf/config 
-current-cluster: kafka
-clusters:
-- name: kafka
-  brokers:
-  ${BROKERS}
-  SASL: null
-  TLS: null
-  security-protocol: ""
-  schema-registry-url: ""
-EOF
+  kaf config add-cluster kafka -b `echo $KAFKA_URL | sed 's|kafka+ssl://||g'` | indent
+  kaf config use-cluster kafka | indent
   echo "Successfully created config" | indent
 else
   echo "Could not find a KAFKA_URL to initialize config" | indent
 fi
-
-echo "-----> Moving kaf into app/bin"
-mkdir -p $BUILD_DIR/bin
-cp "${BUILD_DIR}/${VENDORED_KAF}/kaf" $BUILD_DIR/bin/kaf
 
 echo "-----> kaf install done"
