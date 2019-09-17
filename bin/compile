@@ -9,7 +9,7 @@ ENV_DIR=$3
 
 KAF_VERSION="0.1.22"
 VENDORED_KAF="vendor/kaf"
-PATH="$BUILD_DIR/$VENDORED_KAF:$PATH"
+export PATH="$BUILD_DIR/$VENDORED_KAF:$PATH"
 
 indent() {
   c='s/^/       /'
