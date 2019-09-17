@@ -49,7 +49,7 @@ fi
 
 echo "-----> Moving kaf into app/bin"
 mkdir -p $BUILD_DIR/bin
-cp "$BUILDPACK_DIR/bin/kaf" $BUILD_DIR/bin/
+cp "$VENDORED_KAF/kaf" $BUILD_DIR/bin/
 chmod +x $BUILD_DIR/bin/kaf
 
 echo "-----> kaf install done"
