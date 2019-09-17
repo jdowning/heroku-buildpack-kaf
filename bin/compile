@@ -29,14 +29,14 @@ wget https://github.com/birdayz/kaf/releases/download/v${KAF_VERSION}/kaf_${KAF_
 
 echo "-----> Creating kaf config"
 if [[ -z $KAFKA_URL ]]; then
-  local brokers=`echo $KAFKA_URL | sed 's|kafka+ssl://||g' | tr ',' '\n' | sed 's|^|- |'`
+  BROKERS=`echo $KAFKA_URL | sed 's|kafka+ssl://||g' | tr ',' '\n' | sed 's|^|- |'`
   mkdir -p $BUILD_DIR/.kaf
   cat <<EOF > $BUILD_DIR/.kaf/config 
 current-cluster: kafka
 clusters:
 - name: kafka
   brokers:
-  ${brokers}
+  ${BROKERS}
   SASL: null
   TLS: null
   security-protocol: ""
