@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+set -e
+
+KAF_VERSION="0.1.22"
+VENDORED_KAF="vendor/kaf"
+PATH="$BUILD_DIR/$VENDORED_KAF/bin:$PATH"
+
+indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+
+echo "Using kaf version: ${KAF_VERSION}" | indent
+
+echo "-----> Fetching and vendoring kaf into slug"
+mkdir -p "$BUILD_DIR/$VENDORED_KAF"
+wget https://github.com/birdayz/kaf/releases/download/v${KAF_VERSION}/kaf_${KAF_VERSION}_Linux_x86_64.tar.gz && \
+  tar zxf kaf_${KAF_VERSION}_Linux_x86_64.tar.gz -C ${BUILD_DIR}/${VENDORED_KAF} && \
+  rm kaf_${KAF_VERSION}_Linux_x86_64.tar.gz
+
+echo "-----> Creating kaf config"
+if [[ -z $KAFKA_URL ]]; then
+  local brokers=`echo $KAFKA_URL | sed 's|kafka+ssl://||g' | tr ',' '\n' | sed 's|^|- |'`
+  mkdir -p $BUILD_DIR/.kaf
+  cat <<EOF > $BUILD_DIR/.kaf/config 
+current-cluster: kafka
+clusters:
+- name: kafka
+  brokers:
+  ${brokers}
+  SASL: null
+  TLS: null
+  security-protocol: ""
+  schema-registry-url: ""
+EOF
+  echo "Successfully created config" | ident
+else
+  echo "Could not find a KAFKA_URL to initialize config" | indent
+fi
+
+echo "-----> Moving kaf into app/bin"
+mkdir -p $BUILD_DIR/bin
+cp "$BUILDPACK_DIR/bin/kaf" $BUILD_DIR/bin/
+chmod +x $BUILD_DIR/bin/kaf
+
+echo "-----> kaf install done"
