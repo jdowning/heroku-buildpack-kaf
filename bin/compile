@@ -32,8 +32,8 @@ echo 'PATH=$PATH:$HOME/vendor/kaf' > $BUILD_DIR/.profile.d/kaf.sh
 echo "Installed kaf version: ${KAF_VERSION}" | indent
 
 echo "-----> Creating kaf config"
-if [[ -n "$KAFKA_URL" ]]; then
-  BROKERS=`echo $KAFKA_URL | sed 's|kafka+ssl://||g'`
+BROKERS=`echo $KAFKA_URL | sed 's|kafka+ssl://||g'`
+if [[ -n "$BROKERS" ]]; then
   kaf config add-cluster kafka --brokers $BROKERS | indent
   kaf config use-cluster kafka | indent
   echo "Successfully created config" | indent
