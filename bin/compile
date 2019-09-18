@@ -28,10 +28,11 @@ wget -q https://github.com/birdayz/kaf/releases/download/v${KAF_VERSION}/kaf_${K
   rm kaf_${KAF_VERSION}_Linux_x86_64.tar.gz
 
 mkdir -p $BUILD_DIR/.profile.d
-echo "PATH=\$PATH:${VENDORED_KAF}" > $BUILD_DIR/.profile.d/kaf.sh
+echo 'PATH=$PATH:$HOME/vendor/kaf' > $BUILD_DIR/.profile.d/kaf.sh
+echo "Installed kaf version: ${KAF_VERSION}" | indent
 
 echo "-----> Creating kaf config"
-if [[ -n $KAFKA_URL ]]; then
+if [[ -n "$KAFKA_URL" ]]; then
   BROKERS=`echo $KAFKA_URL | sed 's|kafka+ssl://||g'`
   kaf config add-cluster kafka --brokers $BROKERS | indent
   kaf config use-cluster kafka | indent
