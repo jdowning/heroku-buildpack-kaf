@@ -31,8 +31,9 @@ mkdir -p $BUILD_DIR/.profile.d
 echo "PATH=\$PATH:${VENDORED_KAF}" > $BUILD_DIR/.profile.d/kaf.sh
 
 echo "-----> Creating kaf config"
-if [[ -z $KAFKA_URL ]]; then
-  kaf config add-cluster kafka -b `echo $KAFKA_URL | sed 's|kafka+ssl://||g'` | indent
+if [[ -n $KAFKA_URL ]]; then
+  BROKERS=`echo $KAFKA_URL | sed 's|kafka+ssl://||g'`
+  kaf config add-cluster kafka --brokers $BROKERS | indent
   kaf config use-cluster kafka | indent
   echo "Successfully created config" | indent
 else
