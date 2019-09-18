@@ -8,8 +8,8 @@ CACHE_DIR=$2
 ENV_DIR=$3
 
 KAF_VERSION="0.1.22"
-VENDORED_KAF="vendor/kaf"
-export PATH="$BUILD_DIR/$VENDORED_KAF:$PATH"
+VENDORED_KAF="${BUILD_DIR}/vendor/kaf"
+export PATH="${VENDORED_KAF}:${PATH}"
 
 indent() {
   c='s/^/       /'
@@ -22,10 +22,13 @@ indent() {
 echo "Using kaf version: ${KAF_VERSION}" | indent
 
 echo "-----> Fetching and vendoring kaf into slug"
-mkdir -p "$BUILD_DIR/$VENDORED_KAF"
+mkdir -p "$VENDORED_KAF"
 wget -q https://github.com/birdayz/kaf/releases/download/v${KAF_VERSION}/kaf_${KAF_VERSION}_Linux_x86_64.tar.gz && \
-  tar zxf kaf_${KAF_VERSION}_Linux_x86_64.tar.gz -C ${BUILD_DIR}/${VENDORED_KAF} && \
+  tar zxf kaf_${KAF_VERSION}_Linux_x86_64.tar.gz -C $VENDORED_KAF && \
   rm kaf_${KAF_VERSION}_Linux_x86_64.tar.gz
+
+mkdir -p $BUILD_DIR/.profile.d
+echo "PATH=\$PATH:${VENDORED_KAF}" > $BUILD_DIR/.profile.d/kaf.sh
 
 echo "-----> Creating kaf config"
 if [[ -z $KAFKA_URL ]]; then
